@@ -1,5 +1,5 @@
-python-telegram-bot==20.7 
-transformers 
-torch 
+python-telegram-bot==20.7
+transformers
+torch
 pillow
 nest_asyncio
