@@ -69,7 +69,11 @@ def get_bot_token():
     to load from Google Colab `userdata` (backwards compatibility). Raises
     RuntimeError if none found.
     """
+    # Check the canonical environment variable
     token = os.getenv("TELEGRAM_API_KEY")
+    # Backwards compatibility: sometimes called BOT_TOKEN or TELEGRAM_BOT_TOKEN
+    if not token:
+        token = os.getenv("BOT_TOKEN") or os.getenv("TELEGRAM_BOT_TOKEN")
     if token:
         return token
 
@@ -85,7 +89,8 @@ def get_bot_token():
         pass
 
     raise RuntimeError(
-        "TELEGRAM_API_KEY not set. Export it with `export TELEGRAM_API_KEY=...`"
+        "TELEGRAM_API_KEY not set. Export it with `export TELEGRAM_API_KEY=...`. "
+        "(Alternatively set BOT_TOKEN or TELEGRAM_BOT_TOKEN.)"
     )
 
 
