@@ -23,23 +23,32 @@ You can run this bot inside a Docker container instead of running it directly on
 
 1. Build the Docker image (run from project root):
 
-```powershell
+```bash
 docker build -t image_classifier:latest .
 ```
 
 2. Run the container with your Telegram bot token:
 
-```powershell
+```bash
 docker run --rm -e TELEGRAM_API_KEY="<your-telegram-bot-token>" image_classifier:latest
 ```
 
 Notes:
 
 - The model weights will be downloaded from Hugging Face the first time the container starts. This may take extra time and network bandwidth.
-- You may mount a local cache to speed things up on repeated runs, for example on PowerShell:
+- You may mount a local cache to speed things up on repeated runs, for example on Linux/macOS (bash):
 
-```powershell
-docker run --rm -e TELEGRAM_API_KEY="<your-telegram-bot-token>" -v ${env:USERPROFILE}\\.cache\\huggingface:/root/.cache/huggingface image_classifier:latest
+```bash
+docker run --rm -e TELEGRAM_API_KEY="<your-telegram-bot-token>" -v $HOME/.cache/huggingface:/root/.cache/huggingface image_classifier:latest
 ```
 
 - This Dockerfile is designed for CPU-only operation. If you have a GPU and want to use CUDA-accelerated PyTorch, use an appropriate CUDA-enabled base image and install the matching `torch` package (not covered here).
+
+## Deployment note
+
+Cloud Run deploy instructions have been removed: this bot uses Telegram long-polling and does not start an HTTP server that listens on the `PORT` environment variable Cloud Run requires. Deploying to Cloud Run as-is will fail unless you convert the bot to webhook mode or add an HTTP server that listens on `PORT` and responds to readiness checks.
+
+Alternatives:
+
+- Convert to webhook mode so Cloud Run can receive incoming HTTP requests via the `PORT` variable (recommended for serverless).
+- Use a VM or Kubernetes/ GKE for long-running processes (polling) if you prefer not to change the bot to webhooks.
